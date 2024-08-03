@@ -20,7 +20,11 @@ import {
 import { Toaster, useToast } from "@/components/ui/toast";
 import * as z from "zod";
 import { useForm } from "vee-validate";
-import { SocialSignUp } from "@/components/partials/socials";
+import { useRouter } from "vue-router";
+const router = useRouter();
+import axios from "axios";
+axios.defaults.withCredentials = true
+
 useSeoMeta({
   title: "Forgot Password",
   description: "Forgot your password? No worries, we got you covered.",
@@ -40,10 +44,24 @@ const { isFieldDirty, handleSubmit, setFieldError } = useForm({
 const { toast } = useToast();
 const onSubmit = handleSubmit((values) => {
   toast({
-    title: "Form Submitted",
+    title: "Registering...",
     description: JSON.stringify(values, null, 2),
   })
   console.log("Submitted")
+  axios.post(import.meta.env.VITE_API_URL+"register", values, {withCredentials: true}).then((res) => {
+    console.log(res.data);
+    toast({
+      title: "Registered",
+      description: "You have successfully registered",
+    });
+    router.push({ name: "index" });
+  }).catch((err) => {
+    console.log(err.response.data);
+    toast({
+      title: "Error",
+      description: err.response.data.error,
+    });
+  });
 });
 
 </script>

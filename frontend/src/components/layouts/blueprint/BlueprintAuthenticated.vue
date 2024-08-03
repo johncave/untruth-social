@@ -19,10 +19,10 @@ const year = new Date().getFullYear();
         </div>
         <div class="h-20 text-center flex flex-col items-center justify-center">
           <span class="text-muted-foreground">
-            © {{ year }} Izmikomar. All rights reserved.
+            © {{ year }} ChatGPT. 
           </span>
           <span class="text-sm text-muted-foreground">
-            Made with ❤️ by Izmikomar Team
+            All rights to yo momma reserved.
           </span>
         </div>
       </div>
