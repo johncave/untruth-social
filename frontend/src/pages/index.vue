@@ -23,63 +23,105 @@ import { createAvatar } from '@dicebear/core';
 import { adventurer } from '@dicebear/collection';
 import { useBreadcrumbsStore } from '@/stores/layout';
 import { useSeoMeta } from '@unhead/vue';
-
+import { ref } from 'vue';
 import axios from 'axios';
 import { create } from 'domain';
 
+import { useToast } from '@/components/ui/toast';
+const { toast } = useToast();
+
 useSeoMeta({
-  title: 'Dashboard',
-  description: 'Officia pariatur eu minim commodo velit ut ad.',
-  ogTitle: 'Dashboard',
-  ogDescription: 'Officia pariatur eu minim commodo velit ut ad.',
+  title: 'TRUTH',
+  description: 'On Untruth Social, every post is certified false, saving you the guesswork.',
+  ogTitle: 'TRUTH',
+  ogDescription: 'On Untruth Social, every post is certified false, saving you the guesswork.',
 });
 const { setBreadcrumbs } = useBreadcrumbsStore();
 
 setBreadcrumbs([
   { label: 'Home', to: '/dashboard' },
-  { label: 'Dashboard', to: '/dashboard' },
+  { label: 'Truth', to: '/dashboard' },
 ]);
 
 
+const fetchPosts = async () => {
+  axios.get(import.meta.env.VITE_API_URL + "posts").then((res) => {
+    posts.value = res.data
 
-axios.get(import.meta.env.VITE_API_URL + "posts").then((res) => {
-  posts = res.data
+    console.log(typeof(posts.value), typeof(posts.value.length))
 
-  for (let i = 0; i < posts.length; i++) {
-    posts[i].avatar = createAvatar(adventurer, {
-      seed: posts[i].username
-    }).toDataUri();
-  }
+    for (let i = 0; i < posts.value.length; i++) {
+      console.log("Hi")
+      console.log(posts.value[i])
+      posts.value[i].avatar = createAvatar(adventurer, {
+        seed: posts.value[i].username
+      }).toDataUri();
+    }
 
-  console.log(posts)
+    console.log(posts.value)
+  }).catch((err) => {
+    console.log(err);
+    // console.log(err.response.data);
+
+  });
+}
+fetchPosts();
+// Poll for new posts every few seconds
+setInterval(fetchPosts, 5000);
+
+
+
+
+let posts = ref()       
+let newPost = ref("")
+let message = ref("This post will be strictly fact checked. Any facts will be removed.")
+const self = this
+
+
+axios.get(import.meta.env.VITE_API_URL + "suggest").then((res) => {
+  newPost.value = res.data.suggestion
+
+  console.log(newPost.value, res.data.suggestion)
 }).catch((err) => {
-  console.log(err.response.data);
+  console.log(err);
+  // console.log(err.response.data);
 
 });
-
-
-let posts
-let newPost:string 
-let message:string = "This post will be strictly fact checked. Any facts will be removed."
-const self = this
 
 const onPost = (e) => {
   e.preventDefault()
   console.log("Submitted", e, newPost, message)
-  message = "Fact checking..."
+  message.value = "Fact checking..."
 
   axios.post(import.meta.env.VITE_API_URL + "check", {
-    content: newPost
+    content: newPost.value
   }).then((res) => {
     console.log(res.data, res.data.allowed);
 
     if (!res.data.allowed) {
       console.log(res.data.allowed)
       console.log(message)
-      message = "Looks like your submission is too factual. We have updated it to remove any facts."
-      newPost = res.data.suggestion
+      message.value = "Looks like your submission is too factual. We have updated it to remove any facts."
+      newPost.value = res.data.suggestion
+    } else {
+      axios.post(import.meta.env.VITE_API_URL + "posts", {
+        content: newPost.value
+      }).then((res) => {
+        console.log(res.data);
+        window.location.reload()
+      }).catch((err) => {
+        toast({
+          title: "Error",
+          description: err.response.data.error,
+        });
+        console.log(err.response.data);
+      });
     }
   }).catch((err) => {
+    toast({
+      title: "Error",
+      description: err.response.data.error,
+    });
     console.log(err.response.data);
   });
 
@@ -104,28 +146,27 @@ const onPost = (e) => {
 
 <template>
   <blueprint-authenticated>
-    <div class="space-y-6">
+    <!-- <div class="space-y-6">
       <v-card>
         <v-card-header>
           <v-card-title> Untruth Social! </v-card-title>
         </v-card-header>
         <v-card-content>
           <p>
-            Every day, we are bombarded with information from all sides. It's hard to know what to believe. Blah blah blah, this content was AI generated and I didn't check it, blah. That's why
+            Every day, we are bombarded with information from all sides. It's hard to know what to believe. Blah blah
+            blah, this content was AI generated and I didn't check it, blah. That's why
             we created Untruth Social.
             A place where every post has been verified as untrue by our team of experts (an LLM).
           </p>
         </v-card-content>
       </v-card>
-    </div>
-    <div class="grid grid-cols-2 lg:grid-cols-3 gap-6">
+    </div> -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div class="w-full">
         <card class="shadow-sm">
           <card-header>
-            <card-title> New Untruth! </card-title>
             <card-description>
-              Your post will be strictly fact-checked by our state of the art Large Language Model we downloaded from
-              some Hugging Face repo.
+              <p>On Untruth Social, every post has been verified as untrue, saving you the guesswork.</p><br />Hint: Try posting something true
             </card-description>
           </card-header>
           <card-content>
@@ -135,7 +176,7 @@ const onPost = (e) => {
                   <FormLabel>Post</FormLabel>
                   <FormControl>
                     <!-- <Input type="textarea" placeholder="shadcn" v-bind="componentField" /> -->
-                    <Textarea placeholder="Type your message here." v-model="newPost"></Textarea>
+                    <Textarea placeholder="Type your message here." v-model="newPost" rows="5"></Textarea>
                   </FormControl>
                   <FormDescription>
                     {{ message }}

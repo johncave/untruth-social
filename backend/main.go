@@ -1,4 +1,4 @@
-package main
+	package main
 
 import (
 	"database/sql"
@@ -59,7 +59,7 @@ func main() {
 	app.Use(logger.New())
 	app.Use(cors.New(cors.Config{
 		AllowCredentials: true,
-		AllowOrigins:     "http://localhost:5173",
+		AllowOrigins:     GetEnv("ORIGIN", "http://localhost:5173"),
 	}))
 
 	// Define a route
@@ -77,6 +77,8 @@ func main() {
 
 	app.Post("/api/check", CheckPost)
 
+	app.Get("/api/suggest", SuggestPost)
+
 	// Listen on port 3000
-	log.Fatal(app.Listen(":3000"))
+	log.Fatal(app.Listen(":"+GetEnv("PORT", "3000")))
 }

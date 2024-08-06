@@ -22,6 +22,21 @@ func SubmitPost(c *fiber.Ctx) error {
 		})
 	}
 
+	decision, err := ModeratePost(post.Content)
+	if err != nil {
+		log.Println("Could not moderate post", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Moderation returned an error",
+		})
+	}
+
+	if !decision {
+		log.Println("Post was not allowed:", post.Content)
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"error": "Post was not allowed",
+		})
+	}
+
 	userid, err := GetUsernameForContext(c)
 	if err != nil {
 		log.Println("Could not get user ID for post", err)

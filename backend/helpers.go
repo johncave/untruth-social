@@ -3,6 +3,8 @@ package main
 import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
+	"os"
+	log "github.com/sirupsen/logrus"
 )
 
 func GetSession(c *fiber.Ctx) (*session.Session, error) {
@@ -40,4 +42,13 @@ func GetUserIDForContext(c *fiber.Ctx) (int, error) {
 	}
 
 	return userID, nil
+}
+
+func GetEnv(key string, fallback string) string {
+	value := os.Getenv(key)
+	log.Printf("Env %s: %s\n", key, value)
+	if len(value) == 0 {
+		return fallback
+	}
+	return value
 }

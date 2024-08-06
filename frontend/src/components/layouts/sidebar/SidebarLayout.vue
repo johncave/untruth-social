@@ -9,7 +9,7 @@ const attrs = useAttrs();
 const navMenu = useNavigationMenu();
 </script>
 <template>
-  <div
+  <!-- <div
     class="hidden lg:flex flex-col w-80 shrink-0 text-foreground/90 sticky-sidebar"
     v-bind="attrs"
   >
@@ -34,7 +34,7 @@ const navMenu = useNavigationMenu();
         </div>
       </sheet-content>
     </sheet>
-  </div>
+  </div> -->
 </template>
 
 <style scoped>

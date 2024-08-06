@@ -9,8 +9,8 @@ const year = new Date().getFullYear();
 <template>
   <auth-provider>
     <frame-content class="flex">
-      <sidebar-layout />
-      <div class="w-full lg:ml-[20rem] flex flex-col justify-between">
+      <!-- <sidebar-layout /> -->
+      <div class="w-full flex flex-col justify-between">
         <div>
           <app-bar-layout />
           <div class="p-6 space-y-6 max-w-screen-2xl mx-auto">

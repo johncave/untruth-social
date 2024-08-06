@@ -21,12 +21,15 @@ import { Toaster, useToast } from "@/components/ui/toast";
 import * as z from "zod";
 import { useForm } from "vee-validate";
 import { useRouter } from "vue-router";
+import { createAvatar } from '@dicebear/core';
+import { adventurer } from '@dicebear/collection';
+import { watchEffect, ref  } from 'vue';
 const router = useRouter();
 import axios from "axios";
 axios.defaults.withCredentials = true
 
 useSeoMeta({
-  title: "Forgot Password",
+  title: "Register User",
   description: "Forgot your password? No worries, we got you covered.",
   ogTitle: "Forgot Password",
   ogDescription: "Forgot your password? No worries, we got you covered.",
@@ -38,6 +41,8 @@ const schema = toTypedSchema(
      
     })
 );
+
+var username = ref('');
 const { isFieldDirty, handleSubmit, setFieldError } = useForm({
   validationSchema: schema,
 });
@@ -64,13 +69,24 @@ const onSubmit = handleSubmit((values) => {
   });
 });
 
+var avatar = ref('')
+
+watchEffect(() =>{
+  //  console.log("Value is", username.value)
+  avatar =   createAvatar(adventurer,{
+    seed: username.value
+  }).toDataUri();
+
+})
+
+
 </script>
 
 <template>
   <frame-content>
     <auth-container>
       <auth-banner-container
-        heading="Start your journey with us"
+        heading="Start speaking the untruth"
         subheading="Create an account to get started"
       >
         <template #image>
@@ -81,10 +97,15 @@ const onSubmit = handleSubmit((values) => {
         <div class="w-full space-y-8">
           <form @submit="onSubmit" class="w-full space-y-8">
             <div class="w-full flex items-center gap-6">
+                <div class="flex items-center rounded border">
+                  <img :src="avatar" width="96px" />
+                </div>
+
               <form-field
                 v-slot="{ componentField }"
                 name="userName"
                 :validate-on-blur="!isFieldDirty"
+                v-model="username"
               >
                 <form-item class="w-full">
                   <form-label>Username</form-label>

@@ -56,7 +56,7 @@ const router = useRouter();
   <div
     class="w-full px-6 h-20 flex items-center justify-between sticky top-0 bg-background/10 backdrop-blur-md z-10"
   >
-    <div class="w-full lg:hidden">
+    <div class="w-full">
       <BrandLogo />
     </div>
     <div class="w-full flex items-center justify-between">
@@ -78,59 +78,17 @@ const router = useRouter();
         </breadcrumb>
       </div>
       <div class="w-full flex items-center justify-end gap-4">
-        <Button size="icon" variant="outline">
-          <icon icon="ic:round-notifications" width="24" height="24" />
-        </Button>
+        
         <toggle-theme />
-        <dropdown-menu>
-          <dropdown-menu-trigger>
+        
             <user
               :name="auth.user?.name!"
               :role="auth.user?.role.name!"
               url=""
               direction="left"
             />
-          </dropdown-menu-trigger>
-          <dropdown-menu-content
-            :class="[
-              'w-48 mr-4 space-y-2',
-              theme.darkMode ? 'dark shadow-lg' : '',
-            ]"
-          >
-            <dropdown-menu-label> Account </dropdown-menu-label>
-            <dropdown-menu-separator class="my-2" />
-            <dropdown-menu-item
-              class="flex items-center gap-2"
-              @click="router.push({ name: 'profile' })"
-            >
-              <icon icon="ic:round-account-circle" width="24" height="24" />
-              <span> Profile </span>
-            </dropdown-menu-item>
-            <dropdown-menu-item class="flex items-center gap-2">
-              <icon icon="ic:round-settings" width="24" height="24" />
-              <span> Settings </span>
-            </dropdown-menu-item>
-            <dropdown-menu-item class="focus:bg-transparent">
-              <v-button
-                class="flex items-center justify-start gap-2 w-full"
-                variant="destructive"
-                @click="showDialogLogout = true"
-              >
-                <icon icon="ic:round-logout" width="24" height="24" />
-                <span> Logout </span>
-              </v-button>
-            </dropdown-menu-item>
-          </dropdown-menu-content>
-        </dropdown-menu>
-        <button
-          :class="[
-            'p-2 rounded-lg lg:hidden',
-            theme.darkMode ? '' : 'hover:bg-white/60',
-          ]"
-          @click="navMenu.toggle()"
-        >
-          <icon icon="ic:round-menu" width="32" height="32" />
-        </button>
+          
+        
       </div>
     </div>
     <Dialog :open="showDialogLogout">

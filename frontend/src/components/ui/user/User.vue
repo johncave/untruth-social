@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { createAvatar } from '@dicebear/core';
+import { adventurer } from '@dicebear/collection';
 import { computed, PropType } from 'vue';
 const props = defineProps({
   name: {
@@ -20,6 +22,10 @@ const props = defineProps({
   },
 });
 
+const data = createAvatar(adventurer, {
+  seed: props.name,
+}).toDataUri();
+
 const fallBackName = computed(() => {
   return props.name
     .split(' ')
@@ -36,7 +42,7 @@ const fallBackName = computed(() => {
         direction === 'left' ? 'order-1' : 'order-2',
       ]"
     >
-      <avatar-image :src="url" alt="@radix-vue" />
+      <avatar-image :src="data" alt="@radix-vue" />
       <avatar-fallback>{{ fallBackName }}</avatar-fallback>
     </avatar>
     <div
@@ -46,7 +52,6 @@ const fallBackName = computed(() => {
       ]"
     >
       <span>{{ name }}</span>
-      <span class="text-xs text-gray-500 truncate"> {{ role }} </span>
     </div>
   </div>
 </template>
